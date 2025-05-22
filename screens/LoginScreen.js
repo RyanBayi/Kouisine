@@ -1,7 +1,25 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import auth from '@react-native-firebase/auth';
+import { useNavigation } from '@react-navigation/native';
 
 const LoginScreen = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigation = useNavigation();
+
+  const handleLogin = () => {
+    auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(() => {
+        Alert.alert('Connexion réussie !');
+        // navigation.navigate('Home'); ← si tu as une page d'accueil
+      })
+      .catch(error => {
+        Alert.alert('Erreur', error.message);
+      });
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>BIENVENUE</Text>
@@ -11,15 +29,21 @@ const LoginScreen = () => {
         style={styles.input}
         placeholder="Adresse e-mail"
         placeholderTextColor="#999"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
       />
       <TextInput
         style={styles.input}
         placeholder="Mot de passe"
         placeholderTextColor="#999"
+        value={password}
+        onChangeText={setPassword}
         secureTextEntry
       />
 
-      <TouchableOpacity style={styles.loginButton}>
+      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginText}>Se connecter</Text>
       </TouchableOpacity>
 
@@ -27,7 +51,7 @@ const LoginScreen = () => {
         <Text style={styles.forgot}>J'ai oublié mon mot de passe</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.registerButton}>
+      <TouchableOpacity style={styles.registerButton} onPress={() => navigation.navigate('Signup')}>
         <Text style={styles.registerText}>Inscription</Text>
       </TouchableOpacity>
 
